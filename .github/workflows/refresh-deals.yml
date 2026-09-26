@@ -1,0 +1,35 @@
+name: Refresh deals
+on:
+  schedule:
+    - cron: '17 2 * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install jsonschema==4.25.1
+      - run: python scripts/refresh_deals.py
+      - name: Commit changes
+        run: |
+          if ! git diff --quiet -- data/merchants; then
+            git config user.name shileibiz
+            git config user.email shileibiz@gmail.com
+            git add data/merchants
+            git commit -m 'chore: refresh verified deal data'
+            git push
+          fi
+      - name: Telegram failure alert
+        if: failure()
+        env:
+          TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+        run: |
+          if [[ -n "$TG_BOT_TOKEN" && -n "$TG_CHAT_ID" ]]; then
+            curl --fail --silent --show-error --request POST --data-urlencode "chat_id=$TG_CHAT_ID" --data-urlencode "text=CreatorDeals refresh failed: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID" "https://api.telegram.org/bot$TG_BOT_TOKEN/sendMessage"
+          fi

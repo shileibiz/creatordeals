@@ -1,0 +1,6 @@
+---
+import Base from '../../../layouts/Base.astro';
+export function getStaticPaths(){return ['movavi','filmora','camtasia'].map(slug=>({params:{slug},props:{m:Object.values(import.meta.glob('../../../../data/merchants/*.json',{eager:true,import:'default'})).find(x=>x.slug===slug)}}));}
+const {m}=Astro.props;const p=`/store/${m.slug}/`;const alternates={en:p,de:`/de${p}`,ja:`/ja${p}`,'x-default':p};
+---
+<Base lang="de" title={`${m.name} Kaufhilfe und Angebote | CreatorDeals`} description={`${m.name}: offizielle Quelle, Prüfdatum und Hinweise für den Softwarekauf. Keine unbestätigten Gutscheine.`} alternates={alternates} crumbs={[{name:'Startseite',path:'/de/'},{name:m.name,path:`/de${p}`}]}><h1>{m.name}: Kaufhilfe</h1><p class="lead">Derzeit ist kein aktives Angebot bestätigt. Wir veröffentlichen keine ungeprüften Gutscheincodes.</p><p>Prüfen Sie vor dem Kauf den Preis, die Verlängerung und die Lizenzbedingungen direkt beim Anbieter. Offizielle Quelle: <a href={m.source_url}>{m.source_url}</a>. Zuletzt geprüft: {m.fetched_date}.</p><p><a href={p}>Ausführliche englische Kaufhilfe</a></p></Base>

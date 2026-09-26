@@ -1,0 +1,9 @@
+---
+import Base from '../../layouts/Base.astro';
+const modules=import.meta.glob('../../../data/merchants/*.json',{eager:true,import:'default'});
+const all=Object.values(modules);
+const labels={video:'Video creation',audio:'Audio creation',ai:'AI creation'};
+export function getStaticPaths(){return ['video','audio','ai'].map(category=>({params:{category},props:{category}}));}
+const {category}=Astro.props;const ms=all.filter(x=>x.category===category);
+---
+<Base title={`${labels[category]} software buying guides | CreatorDeals`} description={`Compare ${labels[category].toLowerCase()} tools with source-linked merchant notes and verified offer status.`} crumbs={[{name:'Home',path:'/'},{name:labels[category],path:`/category/${category}/`}]}><h1>{labels[category]} tools</h1><p class="lead">Source-linked profiles to help you choose a tool for a real project.</p><div class="grid">{ms.map(m=><article class="card"><h2><a href={`/store/${m.slug}/`}>{m.name}</a></h2><p>{m.focus}</p><small>Checked {m.fetched_date}</small></article>)}</div></Base>

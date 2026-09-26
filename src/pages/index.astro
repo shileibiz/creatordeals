@@ -1,0 +1,6 @@
+---
+import Base from '../layouts/Base.astro';
+const modules=import.meta.glob('../../data/merchants/*.json',{eager:true,import:'default'});
+const merchants=Object.values(modules).sort((a,b)=>a.name.localeCompare(b.name));
+---
+<Base title="CreatorDeals | Verified creator software offers and buying research" description="Research creator software across video, audio and AI. We publish source-linked buying notes and list only verified public offers." alternates={{en:'/',de:'/de/',ja:'/ja/','x-default':'/'}}><h1>Buy creator tools with clearer evidence</h1><p class="lead">Explore 20 video, audio and AI software merchants. Each profile shows what we checked, when we checked it, and whether any public offer is currently verified.</p><p class="notice">No active offers have been verified for this launch. We do not publish guessed coupon codes.</p><div class="grid">{merchants.map(m=><article class="card"><span class="badge">{m.category.toUpperCase()}</span><h2><a href={`/store/${m.slug}/`}>{m.name}</a></h2><p>{m.focus}</p><small>Source checked: {m.fetched_date}</small></article>)}</div></Base>
